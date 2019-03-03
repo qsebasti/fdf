@@ -6,7 +6,7 @@
 /*   By: qsebasti <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/24 14:15:58 by qsebasti          #+#    #+#             */
-/*   Updated: 2017/12/08 14:09:57 by qsebasti         ###   ########.fr       */
+/*   Updated: 2019/03/03 18:03:43 by qsebasti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,24 +34,24 @@ static int	addend(char **line, char **dest, char *tmp)
 
 int			get_next_line(const int fd, char **line)
 {
-	static char	*dest[FD_MAX];
+	static char	*dest = NULL;
 	char		*tmp;
 	int			ret;
 	char		buf[BUFF_SIZE + 1];
 
 	tmp = NULL;
-	if (fd < 0 || fd > FD_MAX || !line || (!dest[fd] &&
-				!(dest[fd] = ft_strdup(""))))
+	if (fd < 0 || !line || (!dest &&
+				!(dest = ft_strdup(""))))
 		return (-1);
-	if (ft_strchr(dest[fd], '\n'))
-		return (addend(line, &dest[fd], tmp));
+	if (ft_strchr(dest, '\n'))
+		return (addend(line, &dest, tmp));
 	ft_bzero(buf, BUFF_SIZE + 1);
 	while (!ft_strchr(buf, '\n') && (ret = read(fd, buf, BUFF_SIZE)))
 	{
 		if (ret == -1)
 			return (-1);
 		buf[ret] = '\0';
-		dest[fd] = ft_new_alloc(dest[fd], buf);
+		dest = ft_new_alloc(dest, buf);
 	}
-	return (addend(line, &dest[fd], tmp));
+	return (addend(line, &dest, tmp));
 }

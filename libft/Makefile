@@ -6,11 +6,11 @@
 #    By: qsebasti <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/11/07 19:27:18 by qsebasti          #+#    #+#              #
-#    Updated: 2018/01/08 18:27:25 by qsebasti         ###   ########.fr        #
+#    Updated: 2019/03/03 18:12:40 by qsebasti         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-.PHONY=all clean fclean re
+.PHONY=all clean fclean re opti
 
 NAME=libft.a
 
@@ -95,31 +95,38 @@ SRC_NAME=ft_memset.c \
 
 SRC_PATH=src
 
-SRC=$(addprefixe $(SRC_PATH)/, $(SRC_NAME))
+SRC=$(addprefix $(SRC_PATH)/, $(SRC_NAME))
 
 OBJ_NAME=$(SRC_NAME:.c=.o)
 
 OBJ_PATH=obj
 
-OBJ=$(addprefixe $(OBJ_PATH)/, $(OBJ_NAME))
+OBJ=$(addprefix $(OBJ_PATH)/, $(OBJ_NAME))
 
 INC=-I inc/
 
 RM=/bin/rm -f
 
+opti:
+	@make -j8 all
+
 all: $(NAME)
 
-$(NAME): $(OBJ_NAME)
-	ar rc $@ $^
-	ranlib $@
+$(NAME): $(OBJ)
+	@ar rc $@ $^
+	@ranlib $@
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -I .
+$(OBJ_PATH)/%.o: %.c libft.h
+	@mkdir -p $(OBJ_PATH)
+	$(CC) $(CFLAGS) -c $< -I . -o $@
 
 clean:
-	$(RM) $(OBJ_NAME)
+	$(RM) $(OBJ) 
+	$(RM) -r $(OBJ_PATH)
 
 fclean: clean
 	$(RM) $(NAME)
 
-re: fclean all
+re:
+	@make fclean
+	@make opti
